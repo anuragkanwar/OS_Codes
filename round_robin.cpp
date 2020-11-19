@@ -92,7 +92,6 @@ void response_time(vector<pair<int, pair<int, int>>> &rq, vector<pair<int, pair<
 {
     // auto it = find(final_data.begin(), final_data.end(), x);
     pair<int, pair<int, int>> it;
-
     for (auto x : final_data)
     {
 
@@ -102,7 +101,6 @@ void response_time(vector<pair<int, pair<int, int>>> &rq, vector<pair<int, pair<
             break;
         }
     }
-
     if (rq.front().second.first == it.second.first)
     {
         rt[to_string(rq.begin()->second.second)] = tt - rq.front().first;
@@ -150,12 +148,17 @@ int main()
         if (i == 0)
         {
             tt = data[i].first;
+            ready_q(rq, data, tt);
             i++;
         }
-        ready_q(rq, data, tt);
         response_time(rq, final_data, tt, rt);
         tt += min(tq, (rq.front()).second.first);
         ready_q(rq, data, tt);
+        if (rq.size() == 0)
+        {
+            tt = data[0].first;
+            ready_q(rq, data, tt);
+        }
         if (rq.front().second.first - tq > 0)
         {
             pair<int, pair<int, int>> temp = rq.front();
@@ -167,6 +170,11 @@ int main()
         {
             tat[to_string(rq.begin()->second.second)] = tt - rq.begin()->first;
             rq.erase(rq.begin());
+        }
+        if (rq.size() == 0)
+        {
+            tt = data[0].first;
+            ready_q(rq, data, tt);
         }
     }
     waiting_time(wt, tat, final_data);

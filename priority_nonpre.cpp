@@ -138,6 +138,11 @@ int main()
         ready_q(rq, data, tt);
         execute_pro(rq, data, tt, tat, rt);
         ready_q(rq, data, tt);
+        if (rq.size() == 0)
+        {
+            tt = data[0].first.first;
+            ready_q(rq, data, tt);
+        }
     }
     waiting_time(wt, tat, final_data);
 

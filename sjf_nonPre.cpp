@@ -2,8 +2,8 @@
 #include <iomanip>
 #define ll long long
 #define deb(x) cout << #x << "=" << x << endl
-#define tesxt(x) cout << "---------------------" << x << endl;
-#define chk(x) cout << x->first << " " << x->second.first << " " << x->second.second << endl;
+#define test(x) cout << "---------------------" << x << endl;
+#define chk(x) cout << x.first << " " << x.second.first << " " << x.second.second << endl;
 
 using namespace std;
 #define pd(v)                                                                       \
@@ -51,31 +51,6 @@ bool Compare_data(pair<int, pair<int, int>> a, pair<int, pair<int, int>> b)
     return (a.second.second < b.second.second);
 }
 
-void execute_pro(vector<pair<int, pair<int, int>>> &rq, vector<pair<int, pair<int, int>>> &data, int &tt, map<string, int> &tat)
-{
-    auto found = min_element(rq.begin(), rq.end(), Compare);
-    if (data.size() != 0)
-    {
-        if (tt + found->second.first <= data.front().first)
-        {
-            tt += found->second.first;
-            tat[to_string(found->second.second)] = tt - found->first;
-            rq.erase(found);
-        }
-        else
-        {
-            found->second.first -= (data.front().first - tt);
-            tt = data.front().first;
-        }
-    }
-    else
-    {
-        tt += found->second.first;
-        tat[to_string(found->second.second)] = tt - found->first;
-        rq.erase(found);
-    }
-}
-
 void response_time(vector<pair<int, pair<int, int>>> &rq, vector<pair<int, pair<int, int>>> &final_data, int &tt, map<string, int> &rt)
 {
     pair<int, pair<int, int>> it;
@@ -94,6 +69,14 @@ void response_time(vector<pair<int, pair<int, int>>> &rq, vector<pair<int, pair<
         rt[to_string(found->second.second)] = tt - found->first;
     }
     return;
+}
+
+void execute_pro(vector<pair<int, pair<int, int>>> &rq, vector<pair<int, pair<int, int>>> &data, int &tt, map<string, int> &tat)
+{
+    auto found = min_element(rq.begin(), rq.end(), Compare);
+    tt += found->second.first;
+    tat[to_string(found->second.second)] = tt - found->first;
+    rq.erase(found);
 }
 
 void waiting_time(map<string, int> &wt, map<string, int> &tat, vector<pair<int, pair<int, int>>> &final_data)
@@ -131,8 +114,8 @@ int main()
     final_data = data;
     map<string, int> wt, rt, tat;
     vector<pair<int, pair<int, int>>> rq;
-    int i = 0;
     int tt = 0;
+    int i = 0;
     while (data.size() || rq.size())
     {
         if (i == 0)
@@ -152,7 +135,6 @@ int main()
     }
 
     waiting_time(wt, tat, final_data);
-
     cout << left << setw(6) << "P" << setw(6) << "AT" << setw(6) << "CBT" << setw(6) << "WT" << setfill(' ') << setw(6) << "RT" << setfill(' ') << setw(6) << "TAT" << endl;
 
     auto it1 = wt.begin();
@@ -179,19 +161,14 @@ int main()
 1 8
 0 3
 4 4
+*/
 
+/*
 4
 3 2
 2 4
 0 6
 1 4
-
-5
-3 1
-1 4
-4 2
-0 6
-2 3
 
 5
 0 5

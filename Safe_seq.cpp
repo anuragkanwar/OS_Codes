@@ -30,23 +30,76 @@ typedef vector<vl> vvl;
         cout << x << " "; \
     cout << endl
 
-template <typename... T>
-void read(T &... args)
+vi need_matrix(vi &allocated, vi &max)
 {
-    ((cin >> args), ...);
+    vi temp;
+    auto it1 = allocated.begin();
+    auto it2 = max.begin();
+
+    while (it1 != allocated.end())
+    {
+        temp.pb(abs(*it1 - *it2));
+        it1++;
+        it2++;
+    }
+    return temp;
 }
 
-template <typename... T>
-void write(T &&... args)
+bool check_req(vi &v1, vi &v2)
 {
-    ((cout << args << " "), ...);
+    auto it1 = v1.begin();
+    auto it2 = v2.begin();
+    int flag = 1;
+    while (it1 != v1.end())
+    {
+        if (*it1 > *it2)
+        {
+            flag = 0;
+            break;
+        }
+        it1++;
+        it2++;
+    }
+    return flag;
 }
-//**********************************************************************************************************//
 
-vi Type;
-void Format(int m)
+void extend_avl(vi &avl, vi &allocated)
 {
-    Type.resize(m);
+    auto it1 = avl.begin();
+    auto it2 = allocated.begin();
+    while (it1 != avl.end())
+    {
+        *it1 += *it2;
+        it1++;
+        it2++;
+    }
+}
+
+bool safe_seq(vector<pair<pair<int, vi>, pair<vi, vi>>> &data, vi &avl, vi &seq)
+{
+    while (data.size())
+    {
+        int flag = 0;
+        pair<pair<int, vi>, pair<vi, vi>> temp;
+        for (auto x : data)
+        {
+            temp = x;
+            if (check_req(x.second.second, avl))
+            {
+                seq.pb(x.first.first);
+                extend_avl(avl, x.first.second);
+                auto it = find(data.begin(), data.end(), temp);
+                data.erase(it);
+                flag = 1;
+                break;
+            }
+        }
+        if (!flag)
+        {
+            return flag;
+        }
+    }
+    return 1;
 }
 
 int main()
@@ -58,11 +111,11 @@ int main()
     cout << "Enter number of resource type : ";
     cin >> m;
 
-    vector<pair<int, pair<vi, vi>>> Data, Org_data;
+    vector<pair<pair<int, vi>, pair<vi, vi>>> Data, Org_data;
     for (int i = 0; i < n; i++)
     {
-        vi temp1, temp2;
-        cout << "enter allocation for process " << i + 1 << " in space seperated format : ";
+        vi temp1, temp2, temp5;
+        cout << "enter allocated process " << i + 1 << " in space seperated format : ";
         for (int j = 0; j < m; j++)
         {
             int temp3;
@@ -76,11 +129,12 @@ int main()
             cin >> temp3;
             temp2.pb(temp3);
         }
-
-        Data.push_back(mp(i, mp(temp1, temp2)));
+        temp5 = need_matrix(temp1, temp2);
+        Data.push_back(mp(mp(i, temp1), mp(temp2, temp5)));
     }
+
     Org_data = Data;
-    vi avl;
+    vi avl, seq;
     cout << "Enter availabel resources in space seperated format : ";
     for (int i = 0; i < m; i++)
     {
@@ -88,53 +142,37 @@ int main()
         cin >> temp;
         avl.pb(temp);
     }
-
-    vvi Need;
-    for (auto x : Data)
+    int flag = safe_seq(Data, avl, seq);
+    if (flag)
     {
-        vi temp;
-        auto it1 = x.second.first.begin();
-        auto it2 = x.second.second.begin();
-
-        while (it1 != x.second.first.end())
+        for (auto x : seq)
         {
-            temp.pb(*it2 - *it1);
-            it1++;
-            it2++;
+            cout << "P" << x << "  ";
         }
-        Need.pb(temp);
+        cout << endl;
     }
-
-    vi seq;
-    while (Data.size() != 0)
+    else
     {
-        int count = -1;
-        for (auto x : Need)
-        {
-            count++;
-            auto it1 = x.begin();
-            auto it2 = avl.begin();
-            int flag = 1;
-            while (it2 != avl.end())
-            {
-                if (*it1 > *it2)
-                {
-                    flag = 0;
-                    break;
-                }
-            }
-
-            if (flag)
-            {
-                it1 = x.begin();
-                it2 = avl.begin();
-                while (it2 != avl.end())
-                {
-                    *it2 = *it2 + *it1;
-                }
-                Data.erase(Data.begin() + count);
-                Need.erase(Need.begin() + count);
-            }
-        }
+        cout << "safe sequence not possible";
     }
 }
+
+/*
+4
+3
+0 1 2
+2 2 2
+6 0 0
+8 4 1
+4 4 5
+5 5 5
+3 3 2
+5 4 2
+1 1 0
+
+
+
+
+
+
+*/
